@@ -1,0 +1,27 @@
+name: CI Pipeline
+
+on: 
+    push: 
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs: 
+    checks:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v4
+            
+            - name: Run health check
+              run: bash scripts/health-check.sh https://hoppscotch.io
+
+            - name: Verify .env is gitignored
+              run : |
+                    if git ls-files --error-unmatch .env 2>/dev/null; then
+                        echo 'ERROR: .env is trached by git!'
+                        exit 1
+                    else 
+                        echo 'OK: .env is not tracked'
+                    fi
